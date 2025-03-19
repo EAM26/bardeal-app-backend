@@ -1,0 +1,62 @@
+# === Java build files ===
+/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# === IntelliJ project files ===
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# === OS-specific ===
+.DS_Store
+Thumbs.db
+
+# === Logs ===
+*.log
+
+# === Environment/config ===
+.env
+*.env
+
+# === Maven ===
+/.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# === Gradle (if using Gradle instead of Maven) ===
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+gradlew
+gradlew.bat
+
+# === Coverage / Reports ===
+/jacoco.exec
+/coverage-reports/
+build/reports/
+
+# === Spring Boot Devtools restart directory ===
+.spring-boot-devtools.properties
+spring-boot-devtools/
+
+# === Temporary files ===
+*.tmp
+*.swp
+*~
+
+# === IntelliJ run configurations ===
+.idea/runConfigurations/
+
+# === Local database files ===
+*.h2.db
+*.mv.db
+*.sqlite
+
+# === VS Code (optional, in case you're using it too) ===
+.vscode/
