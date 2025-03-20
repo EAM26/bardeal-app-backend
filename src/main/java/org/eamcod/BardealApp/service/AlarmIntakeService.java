@@ -1,4 +1,4 @@
-package org.eamcod.BardealApp;
+package org.eamcod.BardealApp.service;
 
 import org.eamcod.BardealApp.model.AlarmIntake;
 import org.eamcod.BardealApp.repo.AlarmIntakeRepo;
