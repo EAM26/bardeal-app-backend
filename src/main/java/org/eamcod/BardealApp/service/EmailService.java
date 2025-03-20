@@ -16,18 +16,13 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    @Value("${spring.mail.password}")
-    private String fromPassword;
-
-    private final String TO_EMAIL =  "emile@casyri.nl";
-
+    @Value("${email.recipient}")
+    private  String emailRecipient;
 
     public void sendAlarmEmail(AlarmIntake alarmIntake) {
-        System.out.println("email: " + fromEmail);
-        System.out.println("password: " + fromPassword);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
-        message.setTo(TO_EMAIL);
+        message.setTo(emailRecipient);
         message.setSubject(("Alarm Intake - " + alarmIntake.getCompanyName()));
 
         String body = "Ingekomen alarmintake:\n\n"
@@ -36,7 +31,6 @@ public class EmailService {
 
         message.setText(body);
         mailSender.send(message);
-        System.out.println("Email sent!");
 
 
     }

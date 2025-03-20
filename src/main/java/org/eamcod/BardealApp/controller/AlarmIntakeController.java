@@ -31,7 +31,6 @@ public class AlarmIntakeController {
     @PostMapping("/form")
     public ResponseEntity<AlarmIntake> addForm(@RequestBody AlarmIntake alarmIntake) {
         AlarmIntake savedIntake = alarmIntakeService.addForm(alarmIntake);
-        System.out.println("Add Form");
         emailService.sendAlarmEmail(savedIntake);
         return new ResponseEntity<>(savedIntake, HttpStatus.OK);
     }
