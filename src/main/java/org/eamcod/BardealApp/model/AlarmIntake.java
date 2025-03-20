@@ -1,9 +1,6 @@
 package org.eamcod.BardealApp.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +19,9 @@ public class AlarmIntake {
     private String companyName;
     private LocalDateTime timestamp;
     private String text;
-
+    private String fileType;
+    @Lob
+    private byte[] fileData;
 
 
 }
