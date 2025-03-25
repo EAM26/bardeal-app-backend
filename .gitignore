@@ -60,3 +60,4 @@ spring-boot-devtools/
 
 # === VS Code (optional, in case you're using it too) ===
 .vscode/
+/src/main/resources/data.sql
