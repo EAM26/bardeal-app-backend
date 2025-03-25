@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/alarm/intake")
+@RequestMapping("/alarm")
 @CrossOrigin
 public class AlarmIntakeController {
 
@@ -25,13 +25,13 @@ public class AlarmIntakeController {
         this.emailService = emailService;
     }
 
-    @GetMapping("/forms")
+    @GetMapping()
     public ResponseEntity<List<AlarmIntake>> getAllForms() {
         System.out.println("Controller Running");
         return new ResponseEntity<>(alarmIntakeService.getAllForms(), HttpStatus.OK);
     }
 
-    @PostMapping("/form")
+    @PostMapping()
     public ResponseEntity<?> addForm(@RequestPart AlarmIntake alarmIntake, @RequestPart MultipartFile pdfFile) {
         AlarmIntake savedAlarmIntake;
         try {
