@@ -2,10 +2,10 @@ package org.eamcod.BardealApp.service;
 
 import org.eamcod.BardealApp.model.User;
 import org.eamcod.BardealApp.repo.UserRepo;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -17,5 +17,10 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
+    }
+
+    public User findByEmail(String email) {
+        Optional<User> userOptional = userRepo.findByEmail(email);
+        return userOptional.orElse(null);
     }
 }
