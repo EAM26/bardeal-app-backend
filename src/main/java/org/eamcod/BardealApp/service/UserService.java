@@ -1,7 +1,9 @@
 package org.eamcod.BardealApp.service;
 
+import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.User;
 import org.eamcod.BardealApp.repo.UserRepo;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,5 +24,9 @@ public class UserService {
     public User findByEmail(String email) {
         Optional<User> userOptional = userRepo.findByEmail(email);
         return userOptional.orElse(null);
+    }
+
+    public User addUser(User user) {
+        return userRepo.save(user);
     }
 }
