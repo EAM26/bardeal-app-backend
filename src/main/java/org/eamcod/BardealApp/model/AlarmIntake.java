@@ -1,5 +1,6 @@
 package org.eamcod.BardealApp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class AlarmIntake {
     private String fileType;
 
     @ManyToOne
+    @JsonIgnore
     private Company company;
 
     @Lob

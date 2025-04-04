@@ -71,7 +71,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/alarm").authenticated()
                         .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/user").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/company").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.GET, "/companies/**").hasAnyRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
 

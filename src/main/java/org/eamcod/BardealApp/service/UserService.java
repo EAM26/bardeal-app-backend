@@ -1,7 +1,9 @@
 package org.eamcod.BardealApp.service;
 
 import org.eamcod.BardealApp.model.AuthorityRole;
+import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.model.User;
+import org.eamcod.BardealApp.repo.CompanyRepo;
 import org.eamcod.BardealApp.repo.UserRepo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -14,9 +16,11 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepo userRepo;
+    private final CompanyRepo companyRepo;
 
-    public UserService(UserRepo userRepo) {
+    public UserService(UserRepo userRepo, CompanyRepo companyRepo) {
         this.userRepo = userRepo;
+        this.companyRepo = companyRepo;
     }
 
     public List<User> getAllUsers() {
@@ -36,5 +40,13 @@ public class UserService {
         String email = principal.getAttribute("email");
         return findByEmail(email);
 
+    }
+
+    public Company getCompany(Long id) {
+        return companyRepo.findById(id).orElseThrow(()-> new NoSuchElementException("No company found with id: " + id));
+    }
+
+    public List<Company> getAllCompanies() {
+        return companyRepo.findAll();
     }
 }
