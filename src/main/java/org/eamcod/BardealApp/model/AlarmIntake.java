@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Entity
 @Data
@@ -20,8 +21,20 @@ public class AlarmIntake {
     private LocalDateTime timestamp;
     private String text;
     private String fileType;
+
+    @ManyToOne
+    private Company company;
+
     @Lob
     private byte[] fileData;
 
-
+    @Override
+    public String toString() {
+        return "AlarmIntake{" +
+                "id=" + id +
+                ", companyName='" + companyName + '\'' +
+                ", timestamp=" + timestamp +
+                ", text='" + text + '\'' +
+                '}';
+    }
 }

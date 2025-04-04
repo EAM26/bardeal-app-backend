@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +20,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -62,21 +64,29 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/me").authenticated()
                         .requestMatchers(HttpMethod.POST, "/alarm").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/alarm").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/alarm").authenticated()
                         .requestMatchers(HttpMethod.GET, "/alarm").authenticated()
                         .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/user").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/company").hasAnyRole("ADMIN", "MANAGER")
                         .anyRequest().authenticated()
                 )
+
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                )
+
                 .oauth2Login(oauth2 -> oauth2
-                        .defaultSuccessUrl("http://localhost:5173/alarm", true)
+//                        .defaultSuccessUrl("http://localhost:5173", true)
+                        .defaultSuccessUrl("http://localhost:8080/me", true)
                         .userInfoEndpoint(userInfo -> userInfo
-                                // IMPORTANT: use an OidcUserService for Google logins
                                 .oidcUserService(customOidcUserService())
                         )
                 )
+
                 .logout(logout -> logout
                         .logoutSuccessUrl("http://localhost:5173")
                         .invalidateHttpSession(true)

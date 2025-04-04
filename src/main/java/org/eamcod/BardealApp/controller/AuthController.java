@@ -25,23 +25,15 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal OAuth2User principal) {
-        String email = principal.getAttribute("email");
-//        User user = userRepository.findByEmail(email);
-        User user = userService.findByEmail(email);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-        System.out.println("************");
-        System.out.println(user);
-        System.out.println("************");
+    public ResponseEntity<Map<String, Object>> getCurrentUser(@AuthenticationPrincipal OAuth2User principal) {
 
+        User user = userService.getCurrentUser(principal);
         return ResponseEntity.ok(Map.of(
                 "id", user.getId(),
                 "name", user.getUsername(),
                 "email", user.getEmail(),
-                "role", user.getRole()
+                "role", user.getRole(),
+                "company_id", user.getCompany().getId()
         ));
     }
-
 }
