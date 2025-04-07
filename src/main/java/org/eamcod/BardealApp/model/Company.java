@@ -29,7 +29,7 @@ public class Company {
     public String toString() {
         return "Company{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", username='" + name + '\'' +
                 ", email='" + email + '\'' +
 //                ", users=" + users +
                 ", alarmIntakes=" + alarmIntakes +

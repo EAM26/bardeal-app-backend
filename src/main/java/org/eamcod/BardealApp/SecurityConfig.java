@@ -69,8 +69,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/alarm").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/alarm").authenticated()
                         .requestMatchers(HttpMethod.GET, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/user").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/companies/**").hasAnyRole("ADMIN")
@@ -84,7 +84,7 @@ public class SecurityConfig {
 
                 .oauth2Login(oauth2 -> oauth2
 //                        .defaultSuccessUrl("http://localhost:5173", true)
-                        .defaultSuccessUrl("http://localhost:8080/me", true)
+                        .defaultSuccessUrl("http://localhost:5173", true)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(customOidcUserService())
                         )
