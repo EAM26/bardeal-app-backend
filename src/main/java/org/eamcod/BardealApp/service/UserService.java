@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -75,4 +76,29 @@ public class UserService {
     }
 
 
+    public void deleteUser(Long id, OAuth2User principal) throws AccessDeniedException {
+        User currentUser = getCurrentUser(principal);
+        User user = userRepo.findById(id).orElseThrow(()-> new NoSuchElementException("No user found with id: " + id));
+
+        if(Objects.equals(currentUser.getId(), user.getId())) {
+            throw new AccessDeniedException("Can't delete yourself.");
+        }
+
+        if(user.getCompany() != currentUser.getCompany() &&
+        currentUser.getRole() == AuthorityRole.MANAGER) {
+            throw new AccessDeniedException("No permission to delete user of other company.");
+        }
+
+        if(user.getRole() == AuthorityRole.ADMIN && currentUser.getRole() == AuthorityRole.MANAGER) {
+            throw new AccessDeniedException("No permission to delete Admin");
+        }
+
+
+
+
+
+
+        userRepo.deleteById(id);
+
+    }
 }

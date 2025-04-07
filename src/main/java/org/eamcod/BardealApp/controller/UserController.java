@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @CrossOrigin
@@ -29,13 +30,25 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody UserInputDTO userInputDto, @AuthenticationPrincipal OAuth2User principal)  {
+    public ResponseEntity<?> addUser(@RequestBody UserInputDTO userInputDto, @AuthenticationPrincipal OAuth2User principal) {
         try {
             return new ResponseEntity<>(userService.addUser(userInputDto, principal), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-        }catch (AccessDeniedException e) {
+        } catch (AccessDeniedException e) {
             return new ResponseEntity<>("Access denied,", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id, @AuthenticationPrincipal OAuth2User principal) {
+        try {
+            userService.deleteUser(id, principal);
+            return new ResponseEntity<>("User deleted", HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 

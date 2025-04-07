@@ -64,15 +64,21 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/me").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/alarm").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.POST, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/alarm").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/alarm").hasAnyRole("ADMIN", "MANAGER")
+
+                        .requestMatchers(HttpMethod.GET, "/users").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/users").hasAnyRole("ADMIN", "MANAGER")
+
                         .requestMatchers(HttpMethod.GET, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
+
                         .requestMatchers(HttpMethod.GET, "/companies/**").hasAnyRole("ADMIN")
 
                         .anyRequest().authenticated()
