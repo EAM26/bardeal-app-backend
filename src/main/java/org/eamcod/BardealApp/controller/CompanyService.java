@@ -50,4 +50,14 @@ public class CompanyService {
             throw new IllegalArgumentException("Company name and email should be unique.");
         }
     }
+
+    public Object updateMyCompany(Long companyId, Company company) {
+        Company oldCompany = companyRepo.findById(companyId).orElseThrow(() -> new NoSuchElementException("No company found with id: " + companyId));
+        oldCompany.setEmail(company.getEmail());
+        try {
+            return companyRepo.save(oldCompany);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Company email should be unique.");
+        }
+    }
 }

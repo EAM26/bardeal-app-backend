@@ -23,12 +23,6 @@ public class CompanyController {
         this.companyService = companyService;
     }
 
-    @GetMapping("/my-company")
-    private ResponseEntity<Company> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
-        Long companyId = userService.getCurrentUser(principal).getCompany().getId();
-        return new ResponseEntity<>(companyService.getCompany(companyId), HttpStatus.OK);
-    }
-
     @GetMapping("/{id}")
     private ResponseEntity<Company> getSingleCompany(@PathVariable Long id) {
         return new ResponseEntity<>(companyService.getCompany(id), HttpStatus.OK);
@@ -55,7 +49,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<?> putCompany(@PathVariable Long id, @RequestBody Company company) {
+    private ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody Company company) {
         try {
             return new ResponseEntity<>(companyService.update(id, company), HttpStatus.OK);
         } catch (NoSuchElementException e) {
@@ -64,4 +58,24 @@ public class CompanyController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
+
+    @GetMapping("/my-company")
+    private ResponseEntity<Company> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
+        Long companyId = userService.getCurrentUser(principal).getCompany().getId();
+        return new ResponseEntity<>(companyService.getCompany(companyId), HttpStatus.OK);
+    }
+
+    @PutMapping("/my-company")
+    private ResponseEntity<?> updateMyCompany(@AuthenticationPrincipal OAuth2User principal, @RequestBody Company company) {
+        Long companyId = userService.getCurrentUser(principal).getCompany().getId();
+        try {
+            return new ResponseEntity<>(companyService.updateMyCompany(companyId, company), HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+
 }
