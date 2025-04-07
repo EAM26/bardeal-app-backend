@@ -1,11 +1,13 @@
 package org.eamcod.BardealApp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Entity
 @Data
@@ -20,8 +22,21 @@ public class AlarmIntake {
     private LocalDateTime timestamp;
     private String text;
     private String fileType;
+
+    @ManyToOne
+    @JsonIgnore
+    private Company company;
+
     @Lob
     private byte[] fileData;
 
-
+    @Override
+    public String toString() {
+        return "AlarmIntake{" +
+                "id=" + id +
+                ", companyName='" + companyName + '\'' +
+                ", timestamp=" + timestamp +
+                ", text='" + text + '\'' +
+                '}';
+    }
 }
