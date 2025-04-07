@@ -23,23 +23,29 @@ public class CompanyController {
     }
 
     @GetMapping("/my-company")
-    private ResponseEntity<Company> getCompanyByLoggedInUser(@AuthenticationPrincipal OAuth2User principal){
+    private ResponseEntity<Company> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
         Long companyId = userService.getCurrentUser(principal).getCompany().getId();
-        return new ResponseEntity<>( companyService.getCompanyById(companyId), HttpStatus.OK);
+        return new ResponseEntity<>(companyService.getCompany(companyId), HttpStatus.OK);
     }
 
-//    @PutMapping("/my-company")
-//    private ResponseEntity<Company> updateCompanyByLoggedInUser(@AuthenticationPrincipal OAuth2User principal){
-//        Long companyId = userService.getCurrentUser(principal).getCompany().getId();
-//        return new ResponseEntity<>( companyService.getCompanyById(companyId), HttpStatus.OK);
-//    }
+    @GetMapping("/{id}")
+    private ResponseEntity<Company> getSingleCompany(@PathVariable Long id) {
+        return new ResponseEntity<>(companyService.getCompany(id), HttpStatus.OK);
+    }
 
     @GetMapping("")
     private ResponseEntity<List<Company>> getAllCompanies() {
-        return new ResponseEntity<>(userService.getAllCompanies(), HttpStatus.OK);
+        return new ResponseEntity<>(companyService.getAllCompanies(), HttpStatus.OK);
     }
-    @GetMapping("/{id}")
-    private ResponseEntity<Company> getCompany(@PathVariable Long id) {
-        return new ResponseEntity<>(userService.getCompany(id), HttpStatus.OK);
+
+    @PostMapping("")
+    private ResponseEntity<?> addCompany(@RequestBody Company company) {
+        try {
+            return new ResponseEntity<>(companyService.addCompany(company), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
     }
+
+
 }

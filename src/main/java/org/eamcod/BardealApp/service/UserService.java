@@ -16,11 +16,9 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepo userRepo;
-    private final CompanyRepo companyRepo;
 
-    public UserService(UserRepo userRepo, CompanyRepo companyRepo) {
+    public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
-        this.companyRepo = companyRepo;
     }
 
     public List<User> getAllUsers() {
@@ -42,11 +40,5 @@ public class UserService {
 
     }
 
-    public Company getCompany(Long id) {
-        return companyRepo.findById(id).orElseThrow(()-> new NoSuchElementException("No company found with id: " + id));
-    }
 
-    public List<Company> getAllCompanies() {
-        return companyRepo.findAll();
-    }
 }
