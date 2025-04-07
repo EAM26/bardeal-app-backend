@@ -34,4 +34,8 @@ public class CompanyService {
             throw new IllegalArgumentException("Company name and email should be unique.");
         }
     }
+
+    public void delete(Long id) {
+      companyRepo.deleteById(id);
+    }
 }

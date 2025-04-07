@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RequestMapping("/companies")
 @RestController
@@ -47,5 +48,9 @@ public class CompanyController {
         }
     }
 
-
+    @DeleteMapping("/{id}")
+    private ResponseEntity<String> deleteCompany(@PathVariable Long id) {
+        companyService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
