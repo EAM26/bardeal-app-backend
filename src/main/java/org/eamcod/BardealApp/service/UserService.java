@@ -58,7 +58,7 @@ public class UserService {
         if(currentUser.getRole() == AuthorityRole.MANAGER && userInputDTO.getRole() == AuthorityRole.ADMIN) {
             throw new AccessDeniedException("No permission for MANAGER to set ADMIN.");
         }
-        
+
         if(!companyRepo.existsById(userInputDTO.getCompanyId())) {
             throw new NoSuchElementException("No company found with id: " + userInputDTO.getCompanyId());
         }
