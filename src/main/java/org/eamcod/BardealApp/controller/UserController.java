@@ -34,10 +34,10 @@ public class UserController {
     public ResponseEntity<?> addUser(@RequestBody UserInputDTO userInputDto, @AuthenticationPrincipal OAuth2User principal) {
         try {
             return new ResponseEntity<>(userService.addUser(userInputDto, principal), HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | AccessDeniedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>("Access denied,", HttpStatus.FORBIDDEN);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 

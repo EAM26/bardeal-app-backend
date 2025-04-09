@@ -5,6 +5,7 @@ import org.eamcod.BardealApp.dto.UserOutputDTO;
 import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.model.User;
+import org.eamcod.BardealApp.repo.CompanyRepo;
 import org.eamcod.BardealApp.repo.UserRepo;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepo userRepo;
     private final CompanyService companyService;
+    private final CompanyRepo companyRepo;
 
-    public UserService(UserRepo userRepo, CompanyService companyService) {
+    public UserService(UserRepo userRepo, CompanyService companyService, CompanyRepo companyRepo) {
         this.userRepo = userRepo;
         this.companyService = companyService;
+        this.companyRepo = companyRepo;
     }
 
     public List<UserOutputDTO> getAllUsers() {
@@ -41,14 +44,24 @@ public class UserService {
     public UserOutputDTO addUser(UserInputDTO userInputDTO, OAuth2User principal) throws AccessDeniedException {
         User currentUser = getCurrentUser(principal);
 
+//        Check role for Authority User
         if(currentUser.getRole() == AuthorityRole.USER) {
-            throw new AccessDeniedException("No permission.");
+            throw new AccessDeniedException("No permission for role USER.");
         }
 
-        if(currentUser.getRole() == AuthorityRole.MANAGER) {
-            userInputDTO.setCompanyId(currentUser.getCompany().getId());
+//        For role manager check if set company is own company
+        if(currentUser.getRole() == AuthorityRole.MANAGER && !currentUser.getCompany().getId().equals(userInputDTO.getCompanyId())) {
+            throw new AccessDeniedException("No permission for Manager to add to other company.");
         }
 
+        //        For role manager check if new user is not Admin
+        if(currentUser.getRole() == AuthorityRole.MANAGER && userInputDTO.getRole() == AuthorityRole.ADMIN) {
+            throw new AccessDeniedException("No permission for MANAGER to set ADMIN.");
+        }
+        
+        if(!companyRepo.existsById(userInputDTO.getCompanyId())) {
+            throw new NoSuchElementException("No company found with id: " + userInputDTO.getCompanyId());
+        }
 
         if(userRepo.existsByUsernameAndCompanyId(userInputDTO.getUsername(), userInputDTO.getCompanyId())) {
             throw new IllegalArgumentException("Name must be unique in company");
@@ -108,11 +121,6 @@ public class UserService {
         if(user.getRole() == AuthorityRole.ADMIN && currentUser.getRole() == AuthorityRole.MANAGER) {
             throw new AccessDeniedException("No permission to delete Admin");
         }
-
-
-
-
-
 
         userRepo.deleteById(id);
 
