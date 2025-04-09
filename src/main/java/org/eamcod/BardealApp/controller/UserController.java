@@ -1,6 +1,7 @@
 package org.eamcod.BardealApp.controller;
 
 import org.eamcod.BardealApp.dto.UserInputDTO;
+import org.eamcod.BardealApp.dto.UserOutputDTO;
 import org.eamcod.BardealApp.model.User;
 import org.eamcod.BardealApp.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserOutputDTO>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id, @AuthenticationPrincipal OAuth2User principal) {
+    public ResponseEntity<String> deleteUser(@PathVariable Long id, @AuthenticationPrincipal OAuth2User principal) {
         try {
             userService.deleteUser(id, principal);
             return new ResponseEntity<>("User deleted", HttpStatus.OK);
@@ -51,5 +52,4 @@ public class UserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
-
 }

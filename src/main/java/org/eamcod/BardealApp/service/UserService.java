@@ -1,6 +1,7 @@
 package org.eamcod.BardealApp.service;
 
 import org.eamcod.BardealApp.dto.UserInputDTO;
+import org.eamcod.BardealApp.dto.UserOutputDTO;
 import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.model.User;
@@ -12,6 +13,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -23,8 +25,11 @@ public class UserService {
         this.companyService = companyService;
     }
 
-    public List<User> getAllUsers() {
-        return userRepo.findAll();
+    public List<UserOutputDTO> getAllUsers() {
+        List<UserOutputDTO> users = userRepo.findAll().stream()
+                .map(this::userToDto)
+                .collect(Collectors.toList());
+        return users;
     }
 
     public User findByEmail(String email) {
@@ -33,7 +38,7 @@ public class UserService {
         return userRepo.findByEmail(email).orElseThrow(()-> new NoSuchElementException("No user found with email: " + email));
     }
 
-    public User addUser(UserInputDTO userInputDTO, OAuth2User principal) throws AccessDeniedException {
+    public UserOutputDTO addUser(UserInputDTO userInputDTO, OAuth2User principal) throws AccessDeniedException {
         User currentUser = getCurrentUser(principal);
 
         if(currentUser.getRole() == AuthorityRole.USER) {
@@ -53,9 +58,8 @@ public class UserService {
             throw new IllegalArgumentException("Email must be unique in company");
         }
 
-
-
-        return userRepo.save(dtoToUser(userInputDTO));
+        User createdUser = userRepo.save(dtoToUser(userInputDTO));
+        return userToDto(createdUser);
     }
 
     public User getCurrentUser(OAuth2User principal) {
@@ -73,6 +77,18 @@ public class UserService {
         Company company = companyService.getSingleCompany(userInputDTO.getCompanyId());
         user.setCompany(company);
         return user;
+    }
+
+    public UserOutputDTO userToDto(User user) {
+        UserOutputDTO dto = new UserOutputDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        dto.setCompanyId(user.getCompany().getId());
+        dto.setCompanyName(user.getCompany().getName());
+
+        return dto;
     }
 
 
