@@ -1,15 +1,12 @@
-package org.eamcod.BardealApp.controller;
+package org.eamcod.BardealApp.service;
 
-import org.apache.coyote.BadRequestException;
 import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.repo.CompanyRepo;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class CompanyService {
@@ -20,8 +17,12 @@ public class CompanyService {
         this.companyRepo = companyRepo;
     }
 
-    public Company getCompany(Long id) {
+    public Company getSingleCompany(Long id) {
         return companyRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No company found with id: " + id));
+    }
+
+    public Company getSingleCompanyByNam(String name) {
+        return companyRepo.findByName(name).orElseThrow(() -> new NoSuchElementException("No company found with username: " + name));
     }
 
     public List<Company> getAllCompanies() {
@@ -32,7 +33,7 @@ public class CompanyService {
         try {
             return companyRepo.save(company);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("Company name and email should be unique.");
+            throw new IllegalArgumentException("Company username and email should be unique.");
         }
     }
 
@@ -47,7 +48,7 @@ public class CompanyService {
         try {
             return companyRepo.save(oldCompany);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("Company name and email should be unique.");
+            throw new IllegalArgumentException("Company username and email should be unique.");
         }
     }
 

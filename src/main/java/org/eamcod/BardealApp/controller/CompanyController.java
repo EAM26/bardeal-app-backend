@@ -1,6 +1,7 @@
 package org.eamcod.BardealApp.controller;
 
 import org.eamcod.BardealApp.model.Company;
+import org.eamcod.BardealApp.service.CompanyService;
 import org.eamcod.BardealApp.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class CompanyController {
 
     @GetMapping("/{id}")
     private ResponseEntity<Company> getSingleCompany(@PathVariable Long id) {
-        return new ResponseEntity<>(companyService.getCompany(id), HttpStatus.OK);
+        return new ResponseEntity<>(companyService.getSingleCompany(id), HttpStatus.OK);
     }
 
     @GetMapping("")
@@ -62,7 +63,7 @@ public class CompanyController {
     @GetMapping("/my-company")
     private ResponseEntity<Company> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
         Long companyId = userService.getCurrentUser(principal).getCompany().getId();
-        return new ResponseEntity<>(companyService.getCompany(companyId), HttpStatus.OK);
+        return new ResponseEntity<>(companyService.getSingleCompany(companyId), HttpStatus.OK);
     }
 
     @PutMapping("/my-company")

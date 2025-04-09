@@ -1,11 +1,14 @@
 package org.eamcod.BardealApp.controller;
 
 import jakarta.mail.MessagingException;
+import org.eamcod.BardealApp.dto.AlarmIntakeInputDTO;
 import org.eamcod.BardealApp.service.AlarmIntakeService;
 import org.eamcod.BardealApp.service.EmailService;
 import org.eamcod.BardealApp.model.AlarmIntake;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,11 +35,11 @@ public class AlarmIntakeController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> addForm(@RequestPart AlarmIntake alarmIntake, @RequestPart MultipartFile pdfFile) {
+    public ResponseEntity<?> addForm(@RequestPart AlarmIntakeInputDTO inputDTO, @RequestPart MultipartFile pdfFile, @AuthenticationPrincipal OAuth2User principal) {
         AlarmIntake savedAlarmIntake;
         try {
-            savedAlarmIntake = alarmIntakeService.addForm(alarmIntake, pdfFile);
-            emailService.sendAlarmEmail(savedAlarmIntake);
+            savedAlarmIntake = alarmIntakeService.addForm(inputDTO, pdfFile, principal);
+            emailService.sendAlarmEmail(savedAlarmIntake, principal);
             return new ResponseEntity<>(savedAlarmIntake, HttpStatus.CREATED);
         } catch(IOException e) {
             e.printStackTrace();

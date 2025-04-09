@@ -64,15 +64,21 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/me").authenticated()
+
+                        .requestMatchers(HttpMethod.GET, "/alarm").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.POST, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/user").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/user").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/alarm").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/alarm").hasAnyRole("ADMIN", "MANAGER")
+
+                        .requestMatchers(HttpMethod.GET, "/users").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/users").hasAnyRole("ADMIN", "MANAGER")
+
                         .requestMatchers(HttpMethod.GET, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
+
                         .requestMatchers(HttpMethod.GET, "/companies/**").hasAnyRole("ADMIN")
 
                         .anyRequest().authenticated()
@@ -84,7 +90,7 @@ public class SecurityConfig {
 
                 .oauth2Login(oauth2 -> oauth2
 //                        .defaultSuccessUrl("http://localhost:5173", true)
-                        .defaultSuccessUrl("http://localhost:8080/me", true)
+                        .defaultSuccessUrl("http://localhost:5173", true)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(customOidcUserService())
                         )

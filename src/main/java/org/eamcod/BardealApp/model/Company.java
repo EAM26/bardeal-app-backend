@@ -16,7 +16,6 @@ public class Company {
     @Column(unique = true)
     private String name;
 
-    @Column(unique = true)
     private String email;
 
     @OneToMany(mappedBy = "company")
@@ -29,7 +28,7 @@ public class Company {
     public String toString() {
         return "Company{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", username='" + name + '\'' +
                 ", email='" + email + '\'' +
 //                ", users=" + users +
                 ", alarmIntakes=" + alarmIntakes +
