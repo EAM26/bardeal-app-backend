@@ -1,6 +1,7 @@
 package org.eamcod.BardealApp.controller;
 
 import jakarta.mail.MessagingException;
+import org.eamcod.BardealApp.dto.AlarmIntakeInputDTO;
 import org.eamcod.BardealApp.service.AlarmIntakeService;
 import org.eamcod.BardealApp.service.EmailService;
 import org.eamcod.BardealApp.model.AlarmIntake;
@@ -34,10 +35,10 @@ public class AlarmIntakeController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> addForm(@RequestPart AlarmIntake alarmIntake, @RequestPart MultipartFile pdfFile, @AuthenticationPrincipal OAuth2User principal) {
+    public ResponseEntity<?> addForm(@RequestPart AlarmIntakeInputDTO inputDTO, @RequestPart MultipartFile pdfFile, @AuthenticationPrincipal OAuth2User principal) {
         AlarmIntake savedAlarmIntake;
         try {
-            savedAlarmIntake = alarmIntakeService.addForm(alarmIntake, pdfFile);
+            savedAlarmIntake = alarmIntakeService.addForm(inputDTO, pdfFile, principal);
             emailService.sendAlarmEmail(savedAlarmIntake, principal);
             return new ResponseEntity<>(savedAlarmIntake, HttpStatus.CREATED);
         } catch(IOException e) {

@@ -40,16 +40,18 @@ public class EmailService {
 
         helper.setFrom(fromEmail);
         helper.setTo(emailRecipient);
-        helper.setSubject(("Alarm Intake - " + alarmIntake.getCompanyName()));
+        helper.setSubject(("Alarm Intake - " + alarmIntake.getClientName()));
 
         String body = "Ingekomen alarmintake:\n\n"
+                + "Client naam: " + alarmIntake.getClientName() + "\n"
                 + "Tijdstip: " + alarmIntake.getTimestamp() + "\n"
                 + "Bericht: " + alarmIntake.getText();
 
         helper.setText(body);
 
         if (alarmIntake.getFileData() != null) {
-            helper.addAttachment("intakeformulier.pdf",
+            String name = String.format("AlarmIntake-%s-%s.pdf", alarmIntake.getClientName(), alarmIntake.getTimestamp());
+            helper.addAttachment(name,
                     new org.springframework.core.io.ByteArrayResource(alarmIntake.getFileData()));
         }
 

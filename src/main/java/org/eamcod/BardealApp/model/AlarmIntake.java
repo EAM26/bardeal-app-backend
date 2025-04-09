@@ -18,7 +18,7 @@ public class AlarmIntake {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String companyName;
+    private String clientName;
     private LocalDateTime timestamp;
     private String text;
     private String fileType;
@@ -34,7 +34,7 @@ public class AlarmIntake {
     public String toString() {
         return "AlarmIntake{" +
                 "id=" + id +
-                ", companyName='" + companyName + '\'' +
+                ", clientName='" + clientName + '\'' +
                 ", timestamp=" + timestamp +
                 ", text='" + text + '\'' +
                 '}';
