@@ -1,7 +1,9 @@
 package org.eamcod.BardealApp.controller;
 
 import org.eamcod.BardealApp.dto.CompanyOutputDTO;
+import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.Company;
+import org.eamcod.BardealApp.model.User;
 import org.eamcod.BardealApp.service.CompanyService;
 import org.eamcod.BardealApp.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -31,8 +34,12 @@ public class CompanyController {
     }
 
     @GetMapping("")
-    private ResponseEntity<List<CompanyOutputDTO>> getAllCompanies() {
-        return new ResponseEntity<>(companyService.getAllCompanies(), HttpStatus.OK);
+    private ResponseEntity<?> getAllCompanies(@AuthenticationPrincipal OAuth2User principal) {
+        try {
+            return new ResponseEntity<>(companyService.getAllCompanies(principal), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
     }
 
     @PostMapping("")

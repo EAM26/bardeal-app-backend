@@ -84,6 +84,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
 
+                        .requestMatchers(HttpMethod.GET, "/companies").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/companies/**").hasAnyRole("ADMIN")
 
                         .anyRequest().authenticated()

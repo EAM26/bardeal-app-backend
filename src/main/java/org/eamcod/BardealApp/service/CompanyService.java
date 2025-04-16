@@ -1,11 +1,15 @@
 package org.eamcod.BardealApp.service;
 
 import org.eamcod.BardealApp.dto.CompanyOutputDTO;
+import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.Company;
+import org.eamcod.BardealApp.model.User;
 import org.eamcod.BardealApp.repo.CompanyRepo;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -13,9 +17,11 @@ import java.util.NoSuchElementException;
 public class CompanyService {
 
     private final CompanyRepo companyRepo;
+    private final UserService userService;
 
-    public CompanyService(CompanyRepo companyRepo) {
+    public CompanyService(CompanyRepo companyRepo, UserService userService) {
         this.companyRepo = companyRepo;
+        this.userService = userService;
     }
 
     public CompanyOutputDTO getSingleCompany(Long id) {
@@ -28,11 +34,20 @@ public class CompanyService {
         return companyToDTO(company);
     }
 
-    public List<CompanyOutputDTO> getAllCompanies() {
-        return companyRepo.findAll().stream()
-                .map(this::companyToDTO)
-                .toList();
+    public List<CompanyOutputDTO> getAllCompanies(OAuth2User principal) throws AccessDeniedException {
+        User currentUser = userService.getCurrentUser(principal);
+        if(currentUser.getRole().equals(AuthorityRole.ADMIN)) {
+            return companyRepo.findAll().stream()
+                    .map(this::companyToDTO)
+                    .toList();
+        }
+        if(currentUser.getRole().equals(AuthorityRole.MANAGER)) {
+            return List.of(companyToDTO(currentUser.getCompany()));
+        }
+        throw new AccessDeniedException("Not authorized.");
     }
+
+
 
 
     public CompanyOutputDTO addCompany(Company company) {
@@ -76,4 +91,6 @@ public class CompanyService {
 
         return dto;
     }
+
+
 }

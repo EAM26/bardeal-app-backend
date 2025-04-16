@@ -19,25 +19,20 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepo userRepo;
-    private final CompanyService companyService;
     private final CompanyRepo companyRepo;
 
-    public UserService(UserRepo userRepo, CompanyService companyService, CompanyRepo companyRepo) {
+    public UserService(UserRepo userRepo, CompanyRepo companyRepo) {
         this.userRepo = userRepo;
-        this.companyService = companyService;
         this.companyRepo = companyRepo;
     }
 
     public List<UserOutputDTO> getAllUsers() {
-        List<UserOutputDTO> users = userRepo.findAll().stream()
+        return userRepo.findAll().stream()
                 .map(this::userToDto)
                 .collect(Collectors.toList());
-        return users;
     }
 
     public User findByEmail(String email) {
-//        Optional<User> userOptional = userRepo.findByEmail(email);
-//        return userOptional.orElseThrow(() -> new NoSuchElementException("No user found with email: " + email));
         return userRepo.findByEmail(email).orElseThrow(()-> new NoSuchElementException("No user found with email: " + email));
     }
 
