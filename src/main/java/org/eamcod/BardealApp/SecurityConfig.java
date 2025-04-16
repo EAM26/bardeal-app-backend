@@ -3,6 +3,7 @@ package org.eamcod.BardealApp;
 import org.eamcod.BardealApp.model.User;
 import org.eamcod.BardealApp.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -35,6 +36,9 @@ public class SecurityConfig {
     @Autowired
     private UserRepo userRepo;
 
+    @Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
+
     @Bean
     public OidcUserService customOidcUserService() {
         return new OidcUserService() {
@@ -57,7 +61,8 @@ public class SecurityConfig {
         };
     }
 
-    @Bean
+
+@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
@@ -89,15 +94,17 @@ public class SecurityConfig {
                 )
 
                 .oauth2Login(oauth2 -> oauth2
-//                        .defaultSuccessUrl("http://localhost:5173", true)
-                        .defaultSuccessUrl("http://localhost:5173", true)
+//                        .defaultSuccessUrl("http://217.123.94.45:5173", true)
+//                        .defaultSuccessUrl("http://vrki.bardeal.nl:5173", true)
+                        .defaultSuccessUrl(frontendBaseUrl, true)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(customOidcUserService())
                         )
                 )
 
                 .logout(logout -> logout
-                        .logoutSuccessUrl("http://localhost:5173")
+//                        .logoutSuccessUrl("http://vrki.bardeal.nl:5173")
+                        .logoutSuccessUrl(frontendBaseUrl)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                 );
@@ -107,7 +114,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of(frontendBaseUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
