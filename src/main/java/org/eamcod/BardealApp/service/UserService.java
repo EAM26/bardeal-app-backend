@@ -87,7 +87,7 @@ public class UserService {
         user.setEmail(userInputDTO.getEmail());
         user.setRole(userInputDTO.getRole());
 
-        Company company = companyService.getSingleCompany(userInputDTO.getCompanyId());
+        Company company = companyRepo.findById(userInputDTO.getCompanyId()).orElseThrow(() -> new NoSuchElementException("No company fouond with id: " + userInputDTO.getCompanyId()));
         user.setCompany(company);
         return user;
     }

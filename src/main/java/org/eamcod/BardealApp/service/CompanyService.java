@@ -1,5 +1,6 @@
 package org.eamcod.BardealApp.service;
 
+import org.eamcod.BardealApp.dto.CompanyOutputDTO;
 import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.repo.CompanyRepo;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,21 +18,26 @@ public class CompanyService {
         this.companyRepo = companyRepo;
     }
 
-    public Company getSingleCompany(Long id) {
-        return companyRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No company found with id: " + id));
+    public CompanyOutputDTO getSingleCompany(Long id) {
+        Company company = companyRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No company found with id: " + id));
+        return companyToDTO(company);
     }
 
-    public Company getSingleCompanyByNam(String name) {
-        return companyRepo.findByName(name).orElseThrow(() -> new NoSuchElementException("No company found with username: " + name));
+    public CompanyOutputDTO getSingleCompanyByName(String name) {
+        Company company = companyRepo.findByName(name).orElseThrow(() -> new NoSuchElementException("No company found with username: " + name));
+        return companyToDTO(company);
     }
 
-    public List<Company> getAllCompanies() {
-        return companyRepo.findAll();
+    public List<CompanyOutputDTO> getAllCompanies() {
+        return companyRepo.findAll().stream()
+                .map(this::companyToDTO)
+                .toList();
     }
 
-    public Company addCompany(Company company) {
+
+    public CompanyOutputDTO addCompany(Company company) {
         try {
-            return companyRepo.save(company);
+            return companyToDTO(companyRepo.save(company));
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Company username and email should be unique.");
         }
@@ -41,24 +47,33 @@ public class CompanyService {
         companyRepo.deleteById(id);
     }
 
-    public Company update(Long id, Company company) {
+    public CompanyOutputDTO update(Long id, Company company) {
         Company oldCompany = companyRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No company found with id: " + id));
         oldCompany.setName(company.getName());
         oldCompany.setEmail(company.getEmail());
         try {
-            return companyRepo.save(oldCompany);
+            return companyToDTO(companyRepo.save(oldCompany));
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Company username and email should be unique.");
         }
     }
 
-    public Object updateMyCompany(Long companyId, Company company) {
+    public CompanyOutputDTO updateMyCompany(Long companyId, Company company) {
         Company oldCompany = companyRepo.findById(companyId).orElseThrow(() -> new NoSuchElementException("No company found with id: " + companyId));
         oldCompany.setEmail(company.getEmail());
         try {
-            return companyRepo.save(oldCompany);
+            return companyToDTO(companyRepo.save(oldCompany));
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Company email should be unique.");
         }
+    }
+
+    private CompanyOutputDTO companyToDTO(Company company) {
+        CompanyOutputDTO dto = new CompanyOutputDTO();
+        dto.setId(company.getId());
+        dto.setName(company.getName());
+        dto.setEmail(company.getEmail());
+
+        return dto;
     }
 }
