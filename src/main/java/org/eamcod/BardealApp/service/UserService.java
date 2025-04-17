@@ -26,10 +26,19 @@ public class UserService {
         this.companyRepo = companyRepo;
     }
 
-    public List<UserOutputDTO> getAllUsers() {
-        return userRepo.findAll().stream()
-                .map(this::userToDto)
-                .collect(Collectors.toList());
+    public List<UserOutputDTO> getAllUsers(OAuth2User principal) throws AccessDeniedException {
+        User currentUser = getCurrentUser(principal);
+        if(currentUser.getRole().equals(AuthorityRole.ADMIN)) {
+            return userRepo.findAll().stream()
+                    .map(this::userToDto)
+                    .collect(Collectors.toList());
+        }
+        if(currentUser.getRole().equals(AuthorityRole.MANAGER)) {
+            return userRepo.findAllByCompanyId(currentUser.getCompany().getId()).stream()
+                    .map(this::userToDto)
+                    .collect(Collectors.toList());
+        }
+        throw new AccessDeniedException("No permission");
     }
 
     public User findByEmail(String email) {

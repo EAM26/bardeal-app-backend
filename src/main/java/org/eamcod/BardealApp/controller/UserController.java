@@ -26,8 +26,12 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserOutputDTO>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<?> getAllUsers(@AuthenticationPrincipal OAuth2User principal) {
+        try {
+            return new ResponseEntity<>(userService.getAllUsers(principal), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
     }
 
     @PostMapping
