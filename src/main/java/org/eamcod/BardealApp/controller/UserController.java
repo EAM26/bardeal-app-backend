@@ -50,8 +50,6 @@ public class UserController {
         try {
             userService.deleteUser(id, principal);
             return new ResponseEntity<>("User deleted", HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (AccessDeniedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }

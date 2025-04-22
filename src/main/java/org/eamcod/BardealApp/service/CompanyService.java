@@ -1,6 +1,7 @@
 package org.eamcod.BardealApp.service;
 
 import org.eamcod.BardealApp.dto.CompanyOutputDTO;
+import org.eamcod.BardealApp.exception.CompanyNotFoundException;
 import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.model.User;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class CompanyService {
@@ -25,12 +25,12 @@ public class CompanyService {
     }
 
     public CompanyOutputDTO getSingleCompany(Long id) {
-        Company company = companyRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No company found with id: " + id));
+        Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException(id));
         return companyToDTO(company);
     }
 
     public CompanyOutputDTO getSingleCompanyByName(String name) {
-        Company company = companyRepo.findByName(name).orElseThrow(() -> new NoSuchElementException("No company found with username: " + name));
+        Company company = companyRepo.findByName(name).orElseThrow(() -> new CompanyNotFoundException(name));
         return companyToDTO(company);
     }
 
@@ -63,7 +63,7 @@ public class CompanyService {
     }
 
     public CompanyOutputDTO update(Long id, Company company) {
-        Company oldCompany = companyRepo.findById(id).orElseThrow(() -> new NoSuchElementException("No company found with id: " + id));
+        Company oldCompany = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException(id));
         oldCompany.setName(company.getName());
         oldCompany.setEmail(company.getEmail());
         try {
@@ -74,7 +74,7 @@ public class CompanyService {
     }
 
     public CompanyOutputDTO updateMyCompany(Long companyId, Company company) {
-        Company oldCompany = companyRepo.findById(companyId).orElseThrow(() -> new NoSuchElementException("No company found with id: " + companyId));
+        Company oldCompany = companyRepo.findById(companyId).orElseThrow(() -> new CompanyNotFoundException(companyId));
         oldCompany.setEmail(company.getEmail());
         try {
             return companyToDTO(companyRepo.save(oldCompany));

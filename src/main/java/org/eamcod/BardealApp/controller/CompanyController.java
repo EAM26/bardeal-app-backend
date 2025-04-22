@@ -61,8 +61,6 @@ public class CompanyController {
     private ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody Company company) {
         try {
             return new ResponseEntity<>(companyService.update(id, company), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
@@ -79,12 +77,8 @@ public class CompanyController {
         Long companyId = userService.getCurrentUser(principal).getCompany().getId();
         try {
             return new ResponseEntity<>(companyService.updateMyCompany(companyId, company), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
-
-
 }

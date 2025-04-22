@@ -2,6 +2,8 @@ package org.eamcod.BardealApp.service;
 
 import org.eamcod.BardealApp.dto.UserInputDTO;
 import org.eamcod.BardealApp.dto.UserOutputDTO;
+import org.eamcod.BardealApp.exception.CompanyNotFoundException;
+import org.eamcod.BardealApp.exception.UserNotFoundException;
 import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.model.User;
@@ -9,10 +11,8 @@ import org.eamcod.BardealApp.repo.CompanyRepo;
 import org.eamcod.BardealApp.repo.UserRepo;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -42,7 +42,7 @@ public class UserService {
     }
 
     public User findByEmail(String email) {
-        return userRepo.findByEmail(email).orElseThrow(()-> new NoSuchElementException("No user found with email: " + email));
+        return userRepo.findByEmail(email).orElseThrow(()-> new UserNotFoundException(email));
     }
 
     public UserOutputDTO addUser(UserInputDTO userInputDTO, OAuth2User principal) throws AccessDeniedException {
@@ -64,7 +64,7 @@ public class UserService {
         }
 
         if(!companyRepo.existsById(userInputDTO.getCompanyId())) {
-            throw new NoSuchElementException("No company found with id: " + userInputDTO.getCompanyId());
+            throw new CompanyNotFoundException(userInputDTO.getCompanyId());
         }
 
         if(userRepo.existsByUsernameAndCompanyId(userInputDTO.getUsername(), userInputDTO.getCompanyId())) {
@@ -91,7 +91,7 @@ public class UserService {
         user.setEmail(userInputDTO.getEmail());
         user.setRole(userInputDTO.getRole());
 
-        Company company = companyRepo.findById(userInputDTO.getCompanyId()).orElseThrow(() -> new NoSuchElementException("No company fouond with id: " + userInputDTO.getCompanyId()));
+        Company company = companyRepo.findById(userInputDTO.getCompanyId()).orElseThrow(() -> new CompanyNotFoundException(userInputDTO.getCompanyId()));
         user.setCompany(company);
         return user;
     }
@@ -111,7 +111,8 @@ public class UserService {
 
     public void deleteUser(Long id, OAuth2User principal) throws AccessDeniedException {
         User currentUser = getCurrentUser(principal);
-        User user = userRepo.findById(id).orElseThrow(()-> new NoSuchElementException("No user found with id: " + id));
+        User user = userRepo.findById(id).orElseThrow(()-> new UserNotFoundException(id));
+
 
         if(Objects.equals(currentUser.getId(), user.getId())) {
             throw new AccessDeniedException("Can't delete yourself.");
