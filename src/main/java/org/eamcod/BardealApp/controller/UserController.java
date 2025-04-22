@@ -11,8 +11,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @CrossOrigin
@@ -40,8 +38,6 @@ public class UserController {
             return new ResponseEntity<>(userService.addUser(userInputDto, principal), HttpStatus.CREATED);
         } catch (IllegalArgumentException | AccessDeniedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
