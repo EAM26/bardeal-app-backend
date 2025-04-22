@@ -19,25 +19,29 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepo userRepo;
-    private final CompanyService companyService;
     private final CompanyRepo companyRepo;
 
-    public UserService(UserRepo userRepo, CompanyService companyService, CompanyRepo companyRepo) {
+    public UserService(UserRepo userRepo, CompanyRepo companyRepo) {
         this.userRepo = userRepo;
-        this.companyService = companyService;
         this.companyRepo = companyRepo;
     }
 
-    public List<UserOutputDTO> getAllUsers() {
-        List<UserOutputDTO> users = userRepo.findAll().stream()
-                .map(this::userToDto)
-                .collect(Collectors.toList());
-        return users;
+    public List<UserOutputDTO> getAllUsers(OAuth2User principal) throws AccessDeniedException {
+        User currentUser = getCurrentUser(principal);
+        if(currentUser.getRole().equals(AuthorityRole.ADMIN)) {
+            return userRepo.findAll().stream()
+                    .map(this::userToDto)
+                    .collect(Collectors.toList());
+        }
+        if(currentUser.getRole().equals(AuthorityRole.MANAGER)) {
+            return userRepo.findAllByCompanyId(currentUser.getCompany().getId()).stream()
+                    .map(this::userToDto)
+                    .collect(Collectors.toList());
+        }
+        throw new AccessDeniedException("No permission");
     }
 
     public User findByEmail(String email) {
-//        Optional<User> userOptional = userRepo.findByEmail(email);
-//        return userOptional.orElseThrow(() -> new NoSuchElementException("No user found with email: " + email));
         return userRepo.findByEmail(email).orElseThrow(()-> new NoSuchElementException("No user found with email: " + email));
     }
 
@@ -87,7 +91,7 @@ public class UserService {
         user.setEmail(userInputDTO.getEmail());
         user.setRole(userInputDTO.getRole());
 
-        Company company = companyService.getSingleCompany(userInputDTO.getCompanyId());
+        Company company = companyRepo.findById(userInputDTO.getCompanyId()).orElseThrow(() -> new NoSuchElementException("No company fouond with id: " + userInputDTO.getCompanyId()));
         user.setCompany(company);
         return user;
     }
