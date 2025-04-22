@@ -35,18 +35,13 @@ public class AlarmIntakeController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> addForm(@RequestPart AlarmIntakeInputDTO inputDTO, @RequestPart MultipartFile pdfFile, @AuthenticationPrincipal OAuth2User principal) {
-        AlarmIntake savedAlarmIntake;
+    public ResponseEntity<Boolean> addForm(@RequestPart AlarmIntakeInputDTO inputDTO, @RequestPart MultipartFile pdfFile, @AuthenticationPrincipal OAuth2User principal) {
         try {
-            savedAlarmIntake = alarmIntakeService.addForm(inputDTO, pdfFile, principal);
-            emailService.sendAlarmEmail(savedAlarmIntake, principal);
-            return new ResponseEntity<>(savedAlarmIntake, HttpStatus.CREATED);
-        } catch(IOException e) {
+            boolean result = emailService.sendAlarmEmail(inputDTO, principal, pdfFile);
+            return ResponseEntity.ok(result);
+        } catch (IOException | MessagingException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
         }
     }
 
