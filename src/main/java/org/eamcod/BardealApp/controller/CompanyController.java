@@ -1,9 +1,7 @@
 package org.eamcod.BardealApp.controller;
 
 import org.eamcod.BardealApp.dto.CompanyOutputDTO;
-import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.Company;
-import org.eamcod.BardealApp.model.User;
 import org.eamcod.BardealApp.service.CompanyService;
 import org.eamcod.BardealApp.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -13,8 +11,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @RequestMapping("/companies")
 @RestController
@@ -61,8 +57,6 @@ public class CompanyController {
     private ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody Company company) {
         try {
             return new ResponseEntity<>(companyService.update(id, company), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
@@ -79,12 +73,8 @@ public class CompanyController {
         Long companyId = userService.getCurrentUser(principal).getCompany().getId();
         try {
             return new ResponseEntity<>(companyService.updateMyCompany(companyId, company), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
-
-
 }

@@ -14,8 +14,5 @@ public class AlarmIntakeInputDTO {
     private String text;
     private String fileType;
 
-
-    private Company company;
-
     private byte[] fileData;
 }
