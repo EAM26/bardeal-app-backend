@@ -2,6 +2,7 @@ package org.eamcod.BardealApp.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.eamcod.BardealApp.dto.AlarmIntakeInputDTO;
 import org.eamcod.BardealApp.model.AlarmIntake;
 import org.eamcod.BardealApp.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public class EmailService {
@@ -57,6 +61,36 @@ public class EmailService {
 
         mailSender.send(mimeMessage);
         System.out.println("mail sent");
+
+    }
+
+    public boolean sendAlarmEmail(AlarmIntakeInputDTO dto, OAuth2User principal, MultipartFile pdfFile) throws MessagingException, IOException {
+
+        User currentUser = userService.getCurrentUser(principal);
+        String emailRecipient = currentUser.getCompany().getEmail();
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+        helper.setFrom(fromEmail);
+        helper.setTo(emailRecipient);
+        helper.setSubject(("Alarm Intake - " + dto.getClientName()));
+
+        String body = "Ingekomen alarmintake:\n\n"
+                + "Client naam: " + dto.getClientName() + "\n"
+                + "Tijdstip: " + dto.getTimestamp() + "\n"
+                + "Bericht: " + dto.getText();
+
+        helper.setText(body);
+
+        if (pdfFile != null && !pdfFile.isEmpty()) {
+            String name = String.format("AlarmIntake-%s-%s.pdf", dto.getClientName(), dto.getTimestamp());
+            helper.addAttachment(name,
+                    new org.springframework.core.io.ByteArrayResource(pdfFile.getBytes()));
+        }
+
+        mailSender.send(mimeMessage);
+        return true;
 
     }
 }
