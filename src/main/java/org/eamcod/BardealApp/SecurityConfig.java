@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -98,7 +99,8 @@ public class SecurityConfig {
 //                        .defaultSuccessUrl("http://217.123.94.45:5173", true)
 //                        .defaultSuccessUrl("http://vrki.bardeal.nl:5173", true)
                         .defaultSuccessUrl(frontendBaseUrl, true)
-                        .userInfoEndpoint(userInfo -> userInfo
+                                .failureHandler(customOAuth2FailureHandler())
+                                .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(customOidcUserService())
                         )
                 )
@@ -124,4 +126,16 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+    @Bean
+    public AuthenticationFailureHandler customOAuth2FailureHandler() {
+        return (request, response, exception) -> {
+            // Sessie opschonen
+            request.getSession().invalidate();
+
+            // Redirect naar jouw frontend-loginpagina (via property)
+            response.sendRedirect(frontendBaseUrl + "/login?reason=oauth-failure");
+        };
+    }
+
 }
