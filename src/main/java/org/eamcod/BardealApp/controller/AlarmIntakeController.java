@@ -37,6 +37,10 @@ public class AlarmIntakeController {
     @PostMapping()
     public ResponseEntity<Boolean> addForm(@RequestPart AlarmIntakeInputDTO inputDTO, @RequestPart MultipartFile pdfFile, @AuthenticationPrincipal OAuth2User principal) {
         try {
+//            Uncomment when save to database;
+//            savedAlarmIntake = alarmIntakeService.addForm(inputDTO, pdfFile, principal);
+//            emailService.sendAlarmEmail(savedAlarmIntake, principal);
+//            return new ResponseEntity<>(savedAlarmIntake, HttpStatus.CREATED);
             boolean result = emailService.sendAlarmEmail(inputDTO, principal, pdfFile);
             return ResponseEntity.ok(result);
         } catch (IOException | MessagingException e) {
