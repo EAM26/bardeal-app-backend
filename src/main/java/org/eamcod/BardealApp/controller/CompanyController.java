@@ -1,5 +1,6 @@
 package org.eamcod.BardealApp.controller;
 
+import org.eamcod.BardealApp.dto.CompanyInputDTO;
 import org.eamcod.BardealApp.dto.CompanyOutputDTO;
 import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.service.CompanyService;
@@ -11,6 +12,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 
 @RequestMapping("/companies")
 @RestController
@@ -24,24 +26,39 @@ public class CompanyController {
         this.companyService = companyService;
     }
 
+    @GetMapping("")
+    private ResponseEntity<List<CompanyOutputDTO>> getAllCompanies() {
+        return new ResponseEntity<>(companyService.getAllCompanies(), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     private ResponseEntity<CompanyOutputDTO> getSingleCompany(@PathVariable Long id) {
         return new ResponseEntity<>(companyService.getSingleCompany(id), HttpStatus.OK);
     }
 
-    @GetMapping("")
-    private ResponseEntity<?> getAllCompanies(@AuthenticationPrincipal OAuth2User principal) {
+//    @GetMapping("")
+//    private ResponseEntity<?> getAllCompanies(@AuthenticationPrincipal OAuth2User principal) {
+//        try {
+//            return new ResponseEntity<>(companyService.getAllCompanies(principal), HttpStatus.OK);
+//        } catch (AccessDeniedException e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+//        }
+//    }
+
+
+    @PostMapping("")
+    private ResponseEntity<?> addCompany(@RequestBody CompanyInputDTO companyInputDTO) {
         try {
-            return new ResponseEntity<>(companyService.getAllCompanies(principal), HttpStatus.OK);
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(companyService.addCompany(companyInputDTO), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
-    @PostMapping("")
-    private ResponseEntity<?> addCompany(@RequestBody Company company) {
+    @PutMapping("/{id}")
+    private ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyInputDTO companyInputDTO) {
         try {
-            return new ResponseEntity<>(companyService.addCompany(company), HttpStatus.CREATED);
+            return new ResponseEntity<>(companyService.update(id, companyInputDTO), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
@@ -53,14 +70,9 @@ public class CompanyController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
-    private ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody Company company) {
-        try {
-            return new ResponseEntity<>(companyService.update(id, company), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
-        }
-    }
+
+//    Requests for the Company of the logged-in user
+
 
     @GetMapping("/my-company")
     private ResponseEntity<CompanyOutputDTO> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
@@ -69,10 +81,11 @@ public class CompanyController {
     }
 
     @PutMapping("/my-company")
-    private ResponseEntity<?> updateMyCompany(@AuthenticationPrincipal OAuth2User principal, @RequestBody Company company) {
+    private ResponseEntity<?> updateMyCompany(@AuthenticationPrincipal OAuth2User principal, @RequestBody CompanyInputDTO companyInputDTO) {
         Long companyId = userService.getCurrentUser(principal).getCompany().getId();
         try {
-            return new ResponseEntity<>(companyService.updateMyCompany(companyId, company), HttpStatus.OK);
+//            return new ResponseEntity<>(companyService.updateMyCompany(companyId, company), HttpStatus.OK);
+            return new ResponseEntity<>(companyService.update(companyId, companyInputDTO), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }

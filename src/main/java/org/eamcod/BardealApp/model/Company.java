@@ -18,6 +18,14 @@ public class Company {
 
     private String email;
 
+    private String address;
+
+    private String zipcode;
+
+    private String city;
+
+    private String phoneNumber;
+
     @OneToMany(mappedBy = "company")
     private List<User> users;
 
