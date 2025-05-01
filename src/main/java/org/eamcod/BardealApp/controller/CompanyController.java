@@ -2,6 +2,7 @@ package org.eamcod.BardealApp.controller;
 
 import org.eamcod.BardealApp.dto.CompanyInputDTO;
 import org.eamcod.BardealApp.dto.CompanyOutputDTO;
+import org.eamcod.BardealApp.exception.CompanyHasUserException;
 import org.eamcod.BardealApp.model.Company;
 import org.eamcod.BardealApp.service.CompanyService;
 import org.eamcod.BardealApp.service.UserService;
@@ -66,8 +67,12 @@ public class CompanyController {
 
     @DeleteMapping("/{id}")
     private ResponseEntity<String> deleteCompany(@PathVariable Long id) {
-        companyService.delete(id);
-        return ResponseEntity.noContent().build();
+        try {
+            companyService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (CompanyHasUserException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
 
