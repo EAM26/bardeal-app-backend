@@ -29,8 +29,8 @@ public class Company {
     @OneToMany(mappedBy = "company")
     private List<User> users;
 
-    @OneToMany(mappedBy = "company")
-    private List<AlarmIntake> alarmIntakes;
+//    @OneToMany(mappedBy = "company")
+//    private List<AlarmIntake> alarmIntakes;
 
     @Override
     public String toString() {
@@ -39,7 +39,7 @@ public class Company {
                 ", username='" + name + '\'' +
                 ", email='" + email + '\'' +
 //                ", users=" + users +
-                ", alarmIntakes=" + alarmIntakes +
+//                ", alarmIntakes=" + alarmIntakes +
                 '}';
     }
 }

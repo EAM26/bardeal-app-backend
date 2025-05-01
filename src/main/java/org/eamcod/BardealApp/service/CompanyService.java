@@ -2,6 +2,7 @@ package org.eamcod.BardealApp.service;
 
 import org.eamcod.BardealApp.dto.CompanyInputDTO;
 import org.eamcod.BardealApp.dto.CompanyOutputDTO;
+import org.eamcod.BardealApp.exception.CompanyHasUserException;
 import org.eamcod.BardealApp.exception.CompanyNotFoundException;
 import org.eamcod.BardealApp.model.AuthorityRole;
 import org.eamcod.BardealApp.model.Company;
@@ -83,6 +84,11 @@ public class CompanyService {
     }
 
     public void delete(Long id) {
+
+        Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException(id));
+        if(!company.getUsers().isEmpty()) {
+            throw new CompanyHasUserException(id);
+        }
         companyRepo.deleteById(id);
     }
 

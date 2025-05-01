@@ -39,7 +39,7 @@ public class AlarmIntakeService {
         alarmIntake.setTimestamp(dto.getTimestamp());
         alarmIntake.setText(dto.getText());
         User currentUser = userService.getCurrentUser(principal);
-        alarmIntake.setCompany(currentUser.getCompany());
+//        alarmIntake.setCompany(currentUser.getCompany());
         alarmIntake.setClientName(dto.getClientName());
         alarmIntake.setFileType(pdfFile.getContentType());
         alarmIntake.setFileData(pdfFile.getBytes());
