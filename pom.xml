@@ -5,12 +5,11 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.4.4</version>
 	</parent>
 	<groupId>org.eamcod</groupId>
 	<artifactId>BardealApp</artifactId>
-	<version>0.1.1-BETA</version>
+	<version>1.0.0</version>
 	<name>BardealApp</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -69,7 +68,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.12.1</version>
+
 				<configuration>
+					<source>21</source>
+					<target>21</target>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>

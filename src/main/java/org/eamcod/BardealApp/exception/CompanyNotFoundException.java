@@ -6,6 +6,10 @@ public class CompanyNotFoundException extends RuntimeException{
     }
 
     public CompanyNotFoundException(String name) {
-        super("Company with name: " + name + " not found");
+        super("Company with name: " + name + " not found.");
+    }
+
+    public CompanyNotFoundException( ) {
+        super("Company not found.");
     }
 }

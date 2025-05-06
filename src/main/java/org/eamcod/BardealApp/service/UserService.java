@@ -53,7 +53,7 @@ public class UserService {
             throw new AccessDeniedException("No permission for role USER.");
         }
 
-//        For role manager check if set company is own company
+//        For role manager check if set company is its own company
         if(currentUser.getRole() == AuthorityRole.MANAGER && !currentUser.getCompany().getId().equals(userInputDTO.getCompanyId())) {
             throw new AccessDeniedException("No permission for Manager to add to other company.");
         }

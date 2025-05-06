@@ -18,11 +18,19 @@ public class Company {
 
     private String email;
 
+    private String address;
+
+    private String zipcode;
+
+    private String city;
+
+    private String phoneNumber;
+
     @OneToMany(mappedBy = "company")
     private List<User> users;
 
-    @OneToMany(mappedBy = "company")
-    private List<AlarmIntake> alarmIntakes;
+//    @OneToMany(mappedBy = "company")
+//    private List<AlarmIntake> alarmIntakes;
 
     @Override
     public String toString() {
@@ -31,7 +39,7 @@ public class Company {
                 ", username='" + name + '\'' +
                 ", email='" + email + '\'' +
 //                ", users=" + users +
-                ", alarmIntakes=" + alarmIntakes +
+//                ", alarmIntakes=" + alarmIntakes +
                 '}';
     }
 }

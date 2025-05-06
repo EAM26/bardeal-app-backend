@@ -23,9 +23,9 @@ public class AlarmIntake {
     private String text;
     private String fileType;
 
-    @ManyToOne
-    @JsonIgnore
-    private Company company;
+//    @ManyToOne
+//    @JsonIgnore
+////    private Company company;
 
     @Lob
     private byte[] fileData;
