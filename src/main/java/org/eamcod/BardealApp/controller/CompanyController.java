@@ -28,12 +28,12 @@ public class CompanyController {
     }
 
     @GetMapping("")
-    private ResponseEntity<List<CompanyOutputDTO>> getAllCompanies() {
+    public ResponseEntity<List<CompanyOutputDTO>> getAllCompanies() {
         return new ResponseEntity<>(companyService.getAllCompanies(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<CompanyOutputDTO> getSingleCompany(@PathVariable Long id) {
+    public ResponseEntity<CompanyOutputDTO> getSingleCompany(@PathVariable Long id) {
         return new ResponseEntity<>(companyService.getSingleCompany(id), HttpStatus.OK);
     }
 
@@ -48,7 +48,7 @@ public class CompanyController {
 
 
     @PostMapping("")
-    private ResponseEntity<?> addCompany(@RequestBody CompanyInputDTO companyInputDTO) {
+    public ResponseEntity<?> addCompany(@RequestBody CompanyInputDTO companyInputDTO) {
         try {
             return new ResponseEntity<>(companyService.addCompany(companyInputDTO), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
@@ -57,7 +57,7 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyInputDTO companyInputDTO) {
+    public ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyInputDTO companyInputDTO) {
         try {
             return new ResponseEntity<>(companyService.update(id, companyInputDTO), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
@@ -66,7 +66,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity<String> deleteCompany(@PathVariable Long id) {
+    public ResponseEntity<String> deleteCompany(@PathVariable Long id) {
         try {
             companyService.delete(id);
             return ResponseEntity.noContent().build();
@@ -76,11 +76,10 @@ public class CompanyController {
     }
 
 
-//    Requests for the Company of the logged-in user
 
 
     @GetMapping("/my-company")
-    private ResponseEntity<CompanyOutputDTO> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
+    public ResponseEntity<CompanyOutputDTO> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
         Long companyId = userService.getCurrentUser(principal).getCompany().getId();
         return new ResponseEntity<>(companyService.getSingleCompany(companyId), HttpStatus.OK);
     }

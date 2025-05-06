@@ -92,6 +92,11 @@ public class CompanyService {
         companyRepo.deleteById(id);
     }
 
+    public CompanyOutputDTO getCompanyByUser(Long userId) {
+        Company company = companyRepo.findCompanyByUserId(userId).orElseThrow(CompanyNotFoundException::new);
+        return companyToDTO(company);
+    }
+
 //    public CompanyOutputDTO updateMyCompany(Long companyId, Company company) {
 //        Company oldCompany = companyRepo.findById(companyId).orElseThrow(() -> new CompanyNotFoundException(companyId));
 //        oldCompany.setEmail(company.getEmail());

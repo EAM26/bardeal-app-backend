@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(CompanyNotFoundException.class)
+    @ExceptionHandler(CompanyHasUserException.class)
     public ResponseEntity<String> handleCompanyHasUserException(CompanyHasUserException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
