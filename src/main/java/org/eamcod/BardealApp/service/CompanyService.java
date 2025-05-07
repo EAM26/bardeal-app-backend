@@ -50,10 +50,18 @@ public class CompanyService {
 //        throw new AccessDeniedException("Not authorized.");
 //    }
 
-    public List<CompanyOutputDTO> getAllCompanies() {
+    public List<CompanyOutputDTO> getAllCompanies(OAuth2User principal) throws AccessDeniedException {
+        User currentUser = userService.getCurrentUser(principal);
+
+        if(currentUser.getRole().equals(AuthorityRole.ADMIN)) {
         return  companyRepo.findAll().stream()
-                .map(this::companyToDTO)
-                .toList();
+                .map(this::companyToDTO).toList();
+        }
+        if(currentUser.getRole().equals(AuthorityRole.MANAGER)) {
+        return  companyRepo.findById(currentUser.getCompany().getId()).stream()
+                .map(this::companyToDTO).toList();
+        }
+        throw new AccessDeniedException("No permission");
     }
 
 

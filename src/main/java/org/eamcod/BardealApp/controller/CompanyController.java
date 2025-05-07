@@ -28,8 +28,13 @@ public class CompanyController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<CompanyOutputDTO>> getAllCompanies() {
-        return new ResponseEntity<>(companyService.getAllCompanies(), HttpStatus.OK);
+    public ResponseEntity<?> getAllCompanies(@AuthenticationPrincipal OAuth2User principal) {
+        try {
+
+            return new ResponseEntity<>(companyService.getAllCompanies(principal), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/{id}")
