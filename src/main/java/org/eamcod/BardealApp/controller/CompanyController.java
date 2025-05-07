@@ -38,8 +38,12 @@ public class CompanyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CompanyOutputDTO> getSingleCompany(@PathVariable Long id) {
-        return new ResponseEntity<>(companyService.getSingleCompany(id), HttpStatus.OK);
+    public ResponseEntity<?> getSingleCompany(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long id) {
+        try {
+            return new ResponseEntity<>(companyService.getSingleCompany(id, principal), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
     }
 
 //    @GetMapping("")
@@ -83,11 +87,11 @@ public class CompanyController {
 
 
 
-    @GetMapping("/my-company")
-    public ResponseEntity<CompanyOutputDTO> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
-        Long companyId = userService.getCurrentUser(principal).getCompany().getId();
-        return new ResponseEntity<>(companyService.getSingleCompany(companyId), HttpStatus.OK);
-    }
+//    @GetMapping("/my-company")
+//    public ResponseEntity<CompanyOutputDTO> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) throws AccessDeniedException {
+//        Long companyId = userService.getCurrentUser(principal).getCompany().getId();
+//        return new ResponseEntity<>(companyService.getSingleCompany(companyId, principal), HttpStatus.OK);
+//    }
 
     @PutMapping("/my-company")
     private ResponseEntity<?> updateMyCompany(@AuthenticationPrincipal OAuth2User principal, @RequestBody CompanyInputDTO companyInputDTO) {

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +28,11 @@ public class CompanyService {
         this.userService = userService;
     }
 
-    public CompanyOutputDTO getSingleCompany(Long id) {
+    public CompanyOutputDTO getSingleCompany(Long id, OAuth2User principal) throws AccessDeniedException {
+        User currentUser = userService.getCurrentUser(principal);
+        if(!Objects.equals(id, currentUser.getCompany().getId()) && !currentUser.getRole().equals(AuthorityRole.ADMIN)) {
+            throw new AccessDeniedException("No permission");
+        }
         Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException(id));
         return companyToDTO(company);
     }
