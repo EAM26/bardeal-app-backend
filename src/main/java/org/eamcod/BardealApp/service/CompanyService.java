@@ -81,7 +81,16 @@ public class CompanyService {
         }
     }
 
-    public CompanyOutputDTO update(Long id, CompanyInputDTO companyInputDTO) {
+    public CompanyOutputDTO update(Long id, CompanyInputDTO companyInputDTO, OAuth2User principal) throws AccessDeniedException {
+        User currentUser = userService.getCurrentUser(principal);
+        if(!currentUser.getRole().equals(AuthorityRole.ADMIN) &&
+                !currentUser.getRole().equals(AuthorityRole.MANAGER)) {
+            throw new AccessDeniedException("No permission");
+        }
+
+        if(currentUser.getRole().equals(AuthorityRole.MANAGER) && !currentUser.getCompany().getId().equals(id)) {
+            throw new AccessDeniedException("No permission");
+        }
         Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException(id));
         try {
             company.setName(companyInputDTO.getName());

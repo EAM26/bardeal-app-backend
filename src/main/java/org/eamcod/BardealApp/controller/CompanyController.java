@@ -39,6 +39,7 @@ public class CompanyController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getSingleCompany(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long id) {
+        System.out.println("Get single company running...");
         try {
             return new ResponseEntity<>(companyService.getSingleCompany(id, principal), HttpStatus.OK);
         } catch (AccessDeniedException e) {
@@ -66,11 +67,15 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyInputDTO companyInputDTO) {
+    public ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyInputDTO companyInputDTO,
+                                          @AuthenticationPrincipal OAuth2User principal) {
+        System.out.println("update company running....");
         try {
-            return new ResponseEntity<>(companyService.update(id, companyInputDTO), HttpStatus.OK);
+            return new ResponseEntity<>(companyService.update(id, companyInputDTO, principal), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 
@@ -98,8 +103,11 @@ public class CompanyController {
         Long companyId = userService.getCurrentUser(principal).getCompany().getId();
         try {
 //            return new ResponseEntity<>(companyService.updateMyCompany(companyId, company), HttpStatus.OK);
-            return new ResponseEntity<>(companyService.update(companyId, companyInputDTO), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(companyService.update(companyId, companyInputDTO, principal), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
+        catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
