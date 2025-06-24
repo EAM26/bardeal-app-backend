@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +28,11 @@ public class CompanyService {
         this.userService = userService;
     }
 
-    public CompanyOutputDTO getSingleCompany(Long id) {
+    public CompanyOutputDTO getSingleCompany(Long id, OAuth2User principal) throws AccessDeniedException {
+        User currentUser = userService.getCurrentUser(principal);
+        if(!Objects.equals(id, currentUser.getCompany().getId()) && !currentUser.getRole().equals(AuthorityRole.ADMIN)) {
+            throw new AccessDeniedException("No permission");
+        }
         Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException(id));
         return companyToDTO(company);
     }
@@ -50,10 +55,18 @@ public class CompanyService {
 //        throw new AccessDeniedException("Not authorized.");
 //    }
 
-    public List<CompanyOutputDTO> getAllCompanies() {
+    public List<CompanyOutputDTO> getAllCompanies(OAuth2User principal) throws AccessDeniedException {
+        User currentUser = userService.getCurrentUser(principal);
+
+        if(currentUser.getRole().equals(AuthorityRole.ADMIN)) {
         return  companyRepo.findAll().stream()
-                .map(this::companyToDTO)
-                .toList();
+                .map(this::companyToDTO).toList();
+        }
+        if(currentUser.getRole().equals(AuthorityRole.MANAGER)) {
+        return  companyRepo.findById(currentUser.getCompany().getId()).stream()
+                .map(this::companyToDTO).toList();
+        }
+        throw new AccessDeniedException("No permission");
     }
 
 
@@ -68,7 +81,16 @@ public class CompanyService {
         }
     }
 
-    public CompanyOutputDTO update(Long id, CompanyInputDTO companyInputDTO) {
+    public CompanyOutputDTO update(Long id, CompanyInputDTO companyInputDTO, OAuth2User principal) throws AccessDeniedException {
+        User currentUser = userService.getCurrentUser(principal);
+        if(!currentUser.getRole().equals(AuthorityRole.ADMIN) &&
+                !currentUser.getRole().equals(AuthorityRole.MANAGER)) {
+            throw new AccessDeniedException("No permission");
+        }
+
+        if(currentUser.getRole().equals(AuthorityRole.MANAGER) && !currentUser.getCompany().getId().equals(id)) {
+            throw new AccessDeniedException("No permission");
+        }
         Company company = companyRepo.findById(id).orElseThrow(() -> new CompanyNotFoundException(id));
         try {
             company.setName(companyInputDTO.getName());

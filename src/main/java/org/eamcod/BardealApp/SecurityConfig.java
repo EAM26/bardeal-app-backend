@@ -63,33 +63,35 @@ public class SecurityConfig {
     }
 
 
-@Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
 //                                .anyRequest().permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/me").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/me").authenticated()
 
-                        .requestMatchers(HttpMethod.GET, "/alarm").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.POST, "/alarm").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/alarm").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.PUT, "/alarm").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.GET, "/alarm").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.POST, "/alarm").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/alarm").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.PUT, "/alarm").hasAnyRole("ADMIN", "MANAGER")
 
-                        .requestMatchers(HttpMethod.GET, "/users").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/users").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.GET, "/users").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.POST, "/users").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.DELETE, "/users").hasAnyRole("ADMIN", "MANAGER")
 
-                        .requestMatchers(HttpMethod.GET, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.PUT, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.GET, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.PUT, "/companies/my-company").hasAnyRole("ADMIN", "MANAGER")
 
-                        .requestMatchers(HttpMethod.GET, "/companies").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.GET, "/companies/**").hasAnyRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/companies").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.GET, "/companies/{id}").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.POST, "/companies/{id}").hasAnyRole("ADMIN", "MANAGER")
+                                .requestMatchers(HttpMethod.PUT, "/companies/{id}").hasAnyRole("ADMIN", "MANAGER")
 
-                        .anyRequest().authenticated()
+                                .anyRequest().denyAll()
                 )
 
                 .exceptionHandling(e -> e
@@ -99,18 +101,18 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
 //                        .defaultSuccessUrl("http://217.123.94.45:5173", true)
 //                        .defaultSuccessUrl("http://vrki.bardeal.nl:5173", true)
-                        .defaultSuccessUrl(frontendBaseUrl, true)
+                                .defaultSuccessUrl(frontendBaseUrl, true)
                                 .failureHandler(customOAuth2FailureHandler())
                                 .userInfoEndpoint(userInfo -> userInfo
-                                .oidcUserService(customOidcUserService())
-                        )
+                                        .oidcUserService(customOidcUserService())
+                                )
                 )
 
                 .logout(logout -> logout
 //                        .logoutSuccessUrl("http://vrki.bardeal.nl:5173")
-                        .logoutSuccessUrl(frontendBaseUrl)
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                                .logoutSuccessUrl(frontendBaseUrl)
+                                .invalidateHttpSession(true)
+                                .deleteCookies("JSESSIONID")
                 );
         return http.build();
     }

@@ -28,13 +28,23 @@ public class CompanyController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<CompanyOutputDTO>> getAllCompanies() {
-        return new ResponseEntity<>(companyService.getAllCompanies(), HttpStatus.OK);
+    public ResponseEntity<?> getAllCompanies(@AuthenticationPrincipal OAuth2User principal) {
+        try {
+
+            return new ResponseEntity<>(companyService.getAllCompanies(principal), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CompanyOutputDTO> getSingleCompany(@PathVariable Long id) {
-        return new ResponseEntity<>(companyService.getSingleCompany(id), HttpStatus.OK);
+    public ResponseEntity<?> getSingleCompany(@AuthenticationPrincipal OAuth2User principal, @PathVariable Long id) {
+        System.out.println("Get single company running...");
+        try {
+            return new ResponseEntity<>(companyService.getSingleCompany(id, principal), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
     }
 
 //    @GetMapping("")
@@ -57,11 +67,15 @@ public class CompanyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyInputDTO companyInputDTO) {
+    public ResponseEntity<?> updateCompany(@PathVariable Long id, @RequestBody CompanyInputDTO companyInputDTO,
+                                          @AuthenticationPrincipal OAuth2User principal) {
+        System.out.println("update company running....");
         try {
-            return new ResponseEntity<>(companyService.update(id, companyInputDTO), HttpStatus.OK);
+            return new ResponseEntity<>(companyService.update(id, companyInputDTO, principal), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 
@@ -78,19 +92,22 @@ public class CompanyController {
 
 
 
-    @GetMapping("/my-company")
-    public ResponseEntity<CompanyOutputDTO> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) {
-        Long companyId = userService.getCurrentUser(principal).getCompany().getId();
-        return new ResponseEntity<>(companyService.getSingleCompany(companyId), HttpStatus.OK);
-    }
+//    @GetMapping("/my-company")
+//    public ResponseEntity<CompanyOutputDTO> getOwnCompany(@AuthenticationPrincipal OAuth2User principal) throws AccessDeniedException {
+//        Long companyId = userService.getCurrentUser(principal).getCompany().getId();
+//        return new ResponseEntity<>(companyService.getSingleCompany(companyId, principal), HttpStatus.OK);
+//    }
 
     @PutMapping("/my-company")
     private ResponseEntity<?> updateMyCompany(@AuthenticationPrincipal OAuth2User principal, @RequestBody CompanyInputDTO companyInputDTO) {
         Long companyId = userService.getCurrentUser(principal).getCompany().getId();
         try {
 //            return new ResponseEntity<>(companyService.updateMyCompany(companyId, company), HttpStatus.OK);
-            return new ResponseEntity<>(companyService.update(companyId, companyInputDTO), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(companyService.update(companyId, companyInputDTO, principal), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
+        }
+        catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
